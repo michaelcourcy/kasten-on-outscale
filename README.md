@@ -1,10 +1,10 @@
 # Kasten on Outscale
 
-We demonstrate here how to use [Kasten] on the outscale platform : 
+We demonstrate here how to use [Kasten](https://www.kasten.io) on the outscale platform : 
 
-*   Build a simple kubernetes cluster with rancher (One RKE, One master and 3 worker nodes)
+*   Build a simple kubernetes cluster with rancher (One rancher server and one downstream cluster)
 *   Install the CSI outscale driver to get dynamic PVC provisionning and Snapshot features
-*   Install Kasten and demonstrate a backup and restore on a simple application.
+*   Install Kasten and use it to backup and restore on a simple application.
 
 # Build a rancher kubernetes cluster 
 
@@ -12,7 +12,7 @@ We demonstrate here how to use [Kasten] on the outscale platform :
 
 ### Create an EIM user and obtain the AK-SK
 
-Go to the [cockpit interface](https://cockpit-eu-west-2.outscale.com) and create an [EIM User](https://wiki.outscale.net/display/EN/EIM+User+Interface) with proper policies to create the infrastructure. I used a policy with full access for quick starting, but you may customize it latter.
+Go to the [cockpit interface](https://cockpit-eu-west-2.outscale.com) and create an [EIM User](https://wiki.outscale.net/display/EN/EIM+User+Interface) with proper policies to create the infrastructure. Use a policy with full access for quick starting, but you may customize it latter.
 
 Use the [AK-SK of this EIM User](https://wiki.outscale.net/display/EN/Managing+Access+Keys+for+EIM+Users) so that you can use it for your client and terraform configuration.
 
@@ -62,7 +62,7 @@ osc-cli icu ListAccessKeys
 
 We'll need a ssh keypair to access your machine, install docker and run rancher container.
 
-I create one based on my ssh keypair 
+Create one based on your default ssh keypair 
 
 ```
 osc-cli fcu CreateKeyPair \
@@ -70,7 +70,7 @@ osc-cli fcu CreateKeyPair \
     --PublicKeyMaterial $(cat ~/.ssh/id_rsa.pub|base64) 
 ```
 
-You may change the `KeyName`, this `KeyName` will be used in the [variable files](./terraform/variable.tf) of the terraform script.
+You may change the `KeyName`, this `KeyName` will be used in the [variable files](./terraform/variables.tf) of the terraform script.
 
 
 #### Create env vars for terraform  
@@ -80,7 +80,7 @@ We now work on the terraform directory
 cd terraform
 ```
 
-To execute terraform you need to export AK-SK you created previously.
+To execute terraform you need to export in env vars the AK SK you created previously.
 
 ```
 export OUTSCALE_ACCESSKEYID="<YOUR_OUTSCALE_ACCESSKEYID>"
@@ -89,7 +89,7 @@ export OUTSCALE_SECRETKEYID="<YOUR_OUTSCALE_SECRETKEYID>"
 
 #### Review terraform and variable files 
 
-Check the terraform files. We basically create a public network and 3 private network in a VPC : 
+Check the terraform files. We basically create a public network and 3 private network in a VPC. 
 
 In the public network we build the Rancher server and on the private networks we build the downstream cluster. See the [rancher architecture page](https://rancher.com/docs/rancher/v2.x/en/overview/architecture/) to better understand the link between rancher server and downstream cluster.
 
@@ -99,7 +99,7 @@ We did not implement an [Authorized Cluster Endpoint](https://rancher.com/docs/r
 
 In eu-west-2 there is 2 AZ available hence the first and third network is belonging to the same AZ.
 
-Edit variable.tfvars and create your infrastructure 
+Edit variables.tf and create your infrastructure 
 
 ```
 # import the outscale provider and init a local terraform backend
@@ -136,13 +136,15 @@ ssh -A outscale@10.0.3.27
 
 ## Create the rancher server 
 
+On the machine in the public network.
+
 ```
 sudo apt-get update 
 sudo apt install --assume-yes docker.io
 sudo docker run --privileged -d --restart=unless-stopped -p 80:80 -p 443:443 rancher/rancher:stable
 ```
 
-Access to https://<public_ip> follow the install wizard.
+Access to https://<public_ip> and follow the install wizard.
 
 
 ## Create the downstream cluster 
@@ -194,7 +196,7 @@ ip-10-0-2-51    Ready    worker              18d   v1.20.6
 ip-10-0-3-27    Ready    worker              18d   v1.20.6
 ```
 
-You're ready now install the outscale CSI driver.
+You're ready now to install the outscale CSI driver.
 
 
 # Install the CSI Driver
