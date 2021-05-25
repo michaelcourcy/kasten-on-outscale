@@ -179,7 +179,7 @@ sudo apt install --assume-yes docker.io
 
 ### Launch the downstream cluster creation
 
-When the rancher server as identified the different nodes to create the cluster click the "Done" button and wait for the downstream cluster to be ready.
+When the rancher server has identified the different nodes to create the cluster click the "Done" button and wait for the downstream cluster to be ready.
 
 ### Obtain the kubeconfig 
 
