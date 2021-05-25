@@ -4,7 +4,7 @@ We demonstrate here how to use [Kasten](https://www.kasten.io) on the outscale p
 
 *   Build a simple kubernetes cluster with rancher (One rancher server and one downstream cluster)
 *   Install the CSI outscale driver to get dynamic PVC provisionning and Snapshot features
-*   Install Kasten and use it to backup and restore on a simple application.
+*   Install Kasten and use it to backup and restore stateful applications.
 
 # Build a rancher kubernetes cluster 
 
