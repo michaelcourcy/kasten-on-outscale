@@ -237,7 +237,7 @@ helm install osc-bsu-csi-driver ./osc-bsu-csi-driver \
 kubectl get pods -o wide -A  -n kube-system
 ```
 
-## create a default storage class 
+## Create a default storage class 
 
 ```
 kubectl create -f https://github.com/outscale-dev/osc-bsu-csi-driver/blob/OSC-MIGRATION/examples/kubernetes/dynamic-provisioning/specs/storageclass.yaml
@@ -250,7 +250,7 @@ ebs-sc (default)   ebs.csi.aws.com   Delete          WaitForFirstConsumer   fals
 
 ## Enable snapshot features 
 
-Create CRD and the snapshot controller.
+Create the CRDs and the snapshot controller.
 
 ```
 git clone https://github.com/kubernetes-csi/external-snapshotter.git
